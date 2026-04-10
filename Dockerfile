@@ -47,12 +47,12 @@ COPY .myrc /root/.myrc
 # Install Oh-My-Zsh (unattended)
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
+# Install Starship prompt
+RUN curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
+
 # Configure Oh-My-Zsh plugins
 # Note: Ensure these exist in ~/.oh-my-zsh/custom/plugins/ or they will be ignored
 RUN sed -i 's/plugins=(.*)/plugins=(starship git-commit zsh-interactive-cd web-search)/' /root/.zshrc
-
-# Install Starship prompt
-RUN curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
 
 # Append custom shell configurations to .zshrc
 RUN printf '%s\n' \
