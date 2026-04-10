@@ -2,16 +2,21 @@
 
 ## Build image
 ```bash
-docker build -t basic:1.0 .
+docker build -t dev-image:1.0 .
 ```
 
 ## Run container
 ```bash
 docker run -it \
-  --name test1.1 \
+  --name dev-container:1.0 \
   -p 2222:22 \
   -p 3389:3389 \
   -p 1234:1234 \
   -p 1235:1235 \
-  basic:1.0
+  dev-image:1.0
+```
+
+## Exec to container
+```bash
+docker exec -it dev-container:1.0
 ```
