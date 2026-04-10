@@ -41,6 +41,9 @@ RUN ssh-keygen -A \
 
 RUN chsh -s $(which zsh)
 
+# Set default shell to Zsh
+SHELL ["/bin/zsh", "-c"]
+
 # Copy custom environment configuration file
 COPY .myrc /root/.myrc
 
@@ -66,17 +69,15 @@ RUN printf '%s\n' \
 '# Quick alias to edit zsh config' \
 'alias zrc="nvim ~/.zshrc"' >> /root/.zshrc
 
-# Set default shell to Zsh
-SHELL ["/bin/zsh", "-c"]
-
 # Install Miniforge (Conda-forge distribution)
 RUN curl -fsSL -o /tmp/miniforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
     && bash /tmp/miniforge.sh -b -p /opt/miniforge \
-    && /opt/miniforge/bin/conda init --all \
+    && /opt/miniforge/bin/conda init zsh \
+    && /opt/miniforge/bin/conda init bash \
     && rm /tmp/miniforge.sh
 
 # Disable auto-activation of base environment
-RUN conda config --set auto_activate_base false
+RUN /opt/miniforge/bin/conda config --set auto_activate_base false
     
 # Install UV (manager for Python)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
