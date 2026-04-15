@@ -26,14 +26,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xrdp \
     xfce4 \
     xfce4-goodies \
+    greybird-gtk-theme \
     dbus-x11 \
     xorgxrdp \
     sudo \
     fzf \
-    ca-certificates \
-    && update-ca-certificates \
-    && locale-gen en_US.UTF-8 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    ninja-build \
+    ca-certificates
+    # && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN update-ca-certificates && locale-gen en_US.UTF-8 
+
+RUN apt-get install -y \
+    vulkan-tools mesa-utils \ 
+    mesa-vulkan-drivers libvulkan1 \
+    libglx0 libgl1 \
+    libglx-mesa0 libegl-mesa0
+
+# For NVIDIA GPU support, install the latest drivers and Vulkan support
+# RUN apt-get install -y libnvidia-gl-590
 
 # Generate SSH host keys & allow root login for development
 RUN ssh-keygen -A \
