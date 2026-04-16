@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
 
 # Install requested tools + essential dependencies for XRDP/Shell/Dev
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     locales \
     curl \
     wget \
@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfce4 \
     xfce4-goodies \
     greybird-gtk-theme \
+    dbus \
     dbus-x11 \
     xorgxrdp \
     sudo \
@@ -43,8 +44,50 @@ RUN apt-get install -y \
     libglx0 libgl1 \
     libglx-mesa0 libegl-mesa0
 
-# For NVIDIA GPU support, install the latest drivers and Vulkan support
-# RUN apt-get install -y libnvidia-gl-590
+# [DEPRECATED] For NVIDIA GPU support, install the latest drivers and Vulkan support (check compatibility with your GPU model)
+# RUN apt-get install -y libnvidia-gl-580
+
+# Check Vulkan version and put right API version below
+RUN vulkaninfo | grep -E "apiVersion|deviceName|driverID"
+
+# NVIDIA VULKAN support 
+ARG VULKAN_API_VERSION=1.3.0
+
+RUN tee /usr/share/glvnd/egl_vendor.d/10_nvidia.json > /dev/null <<EOF
+{
+    "file_format_version": "1.0.0",
+    "ICD": {
+        "library_path": "libEGL_nvidia.so.0"
+    }
+}
+EOF
+
+RUN tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null <<EOF
+{
+    "file_format_version": "1.0.0",
+    "ICD": {
+        "library_path": "libGLX_nvidia.so.0",
+        "api_version": "${VULKAN_API_VERSION}"
+    }
+}
+EOF
+
+RUN tee /etc/vulkan/implicit_layer.d/nvidia_layers.json > /dev/null <<EOF
+{
+    "file_format_version": "1.0.0",
+    "layer": {
+        "name": "VK_LAYER_NV_optimus",
+        "type": "INSTANCE",
+        "library_path": "libGLX_nvidia.so.0",
+        "api_version": "${VULKAN_API_VERSION}",
+        "implementation_version": "1",
+        "description": "NVIDIA Optimus Layer"
+    }
+}
+EOF
+
+# Verify Vulkan installation and GPU recognition (souldn't be llvmpipe)
+RUN vulkaninfo | grep -E "apiVersion|deviceName|driverID"
 
 # Generate SSH host keys & allow root login for development
 RUN ssh-keygen -A \
