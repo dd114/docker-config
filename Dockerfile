@@ -72,19 +72,19 @@ RUN tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null <<EOF
 }
 EOF
 
-RUN tee /etc/vulkan/implicit_layer.d/nvidia_layers.json > /dev/null <<EOF
-{
-    "file_format_version": "1.0.0",
-    "layer": {
-        "name": "VK_LAYER_NV_optimus",
-        "type": "INSTANCE",
-        "library_path": "libGLX_nvidia.so.0",
-        "api_version": "${VULKAN_API_VERSION}",
-        "implementation_version": "1",
-        "description": "NVIDIA Optimus Layer"
-    }
-}
-EOF
+# RUN tee /etc/vulkan/implicit_layer.d/nvidia_layers.json > /dev/null <<EOF
+# {
+#     "file_format_version": "1.0.0",
+#     "layer": {
+#         "name": "VK_LAYER_NV_optimus",
+#         "type": "INSTANCE",
+#         "library_path": "libGLX_nvidia.so.0",
+#         "api_version": "${VULKAN_API_VERSION}",
+#         "implementation_version": "1",
+#         "description": "NVIDIA Optimus Layer"
+#     }
+# }
+# EOF
 
 # Verify Vulkan installation and GPU recognition (souldn't be llvmpipe)
 RUN vulkaninfo | grep -E "apiVersion|deviceName|driverID"
