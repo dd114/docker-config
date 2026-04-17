@@ -53,38 +53,35 @@ RUN vulkaninfo | grep -E "apiVersion|deviceName|driverID"
 # NVIDIA VULKAN support 
 ARG VULKAN_API_VERSION=1.3.0
 
-RUN tee /usr/share/glvnd/egl_vendor.d/10_nvidia.json > /dev/null <<EOF
-{
-    "file_format_version": "1.0.0",
-    "ICD": {
-        "library_path": "libEGL_nvidia.so.0"
-    }
-}
-EOF
+RUN touch /usr/share/glvnd/egl_vendor.d/10_nvidia.json && \
+    printf '{\n\
+    "file_format_version": "1.0.0",\n\
+    "ICD": {\n\
+        "library_path": "libEGL_nvidia.so.0"\n\
+    }\n\
+}\n' > /usr/share/glvnd/egl_vendor.d/10_nvidia.json
 
-RUN tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null <<EOF
-{
-    "file_format_version": "1.0.0",
-    "ICD": {
-        "library_path": "libGLX_nvidia.so.0",
-        "api_version": "${VULKAN_API_VERSION}"
-    }
-}
-EOF
+RUN touch /usr/share/vulkan/icd.d/nvidia_icd.json && \
+    printf '{\n\
+    "file_format_version": "1.0.0",\n\
+    "ICD": {\n\
+        "library_path": "libGLX_nvidia.so.0",\n\
+        "api_version": "%s"\n\
+    }\n\
+}\n' "${VULKAN_API_VERSION}" > /usr/share/vulkan/icd.d/nvidia_icd.json
 
-# RUN tee /etc/vulkan/implicit_layer.d/nvidia_layers.json > /dev/null <<EOF
-# {
-#     "file_format_version": "1.0.0",
-#     "layer": {
-#         "name": "VK_LAYER_NV_optimus",
-#         "type": "INSTANCE",
-#         "library_path": "libGLX_nvidia.so.0",
-#         "api_version": "${VULKAN_API_VERSION}",
-#         "implementation_version": "1",
-#         "description": "NVIDIA Optimus Layer"
-#     }
-# }
-# EOF
+# RUN touch /etc/vulkan/implicit_layer.d/nvidia_layers.json && \
+#     printf '{\n\
+#     "file_format_version": "1.0.0",\n\
+#     "layer": {\n\
+#         "name": "VK_LAYER_NV_optimus",\n\
+#         "type": "INSTANCE",\n\
+#         "library_path": "libGLX_nvidia.so.0",\n\
+#         "api_version": "%s",\n\
+#         "implementation_version": "1",\n\
+#         "description": "NVIDIA Optimus Layer"\n\
+#     }\n\
+# }\n' "${VULKAN_API_VERSION}" > /etc/vulkan/implicit_layer.d/nvidia_layers.json
 
 # Verify Vulkan installation and GPU recognition (souldn't be llvmpipe)
 RUN vulkaninfo | grep -E "apiVersion|deviceName|driverID"
@@ -128,6 +125,7 @@ RUN curl -fsSL -o /tmp/miniforge.sh "https://github.com/conda-forge/miniforge/re
     && bash /tmp/miniforge.sh -b -p /opt/miniforge \
     && /opt/miniforge/bin/conda init zsh \
     && /opt/miniforge/bin/conda init bash \
+    && /opt/miniforge/bin/mamba init --shell zsh \
     && rm /tmp/miniforge.sh
 
 # Disable auto-activation of base environment
