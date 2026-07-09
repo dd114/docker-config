@@ -1,0 +1,11 @@
+# ENV http_proxy=http://user:password@IP:port
+# ENV https_proxy={http_proxy}
+# ENV HTTP_PROXY={http_proxy}
+# ENV HTTPS_PROXY={http_proxy}
+# ENV ftp_proxy={http_proxy}
+
+# ENV no_proxy=localhost,127.0.0.1
+
+# UV variables
+export UV_NATIVE_TLS=true
+export UV_HTTP_TIMEOUT=120

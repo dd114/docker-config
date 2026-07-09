@@ -5,6 +5,21 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
 
+# Don't forget to add proxy envs and certificates if you're behind a corporate firewall
+# Add your proxy settings to .myrc file and uncomment the following lines if needed
+
+# ENV http_proxy=http://user:password@IP:port
+# ENV https_proxy={http_proxy}
+# ENV HTTP_PROXY={http_proxy}
+# ENV HTTPS_PROXY={http_proxy}
+# ENV ftp_proxy={http_proxy}
+
+# ENV no_proxy=localhost,127.0.0.1
+
+# Copy custom CA certificates if needed 
+# COPY ca-certificates-folder /usr/share/ca-certificates/
+
+
 # Install requested tools + essential dependencies for XRDP/Shell/Dev
 RUN apt-get update && apt-get install -y \
     locales \
@@ -33,6 +48,7 @@ RUN apt-get update && apt-get install -y \
     sudo \
     fzf \
     ninja-build \
+    meld \
     ca-certificates
     # && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -93,7 +109,7 @@ RUN ssh-keygen -A \
 RUN chsh -s $(which zsh)
 
 # Set default shell to Zsh
-SHELL ["/bin/zsh", "-c"]
+# SHELL ["/bin/zsh", "-c"]
 
 # Copy custom environment configuration file
 COPY .myrc /root/.myrc
@@ -125,7 +141,7 @@ RUN curl -fsSL -o /tmp/miniforge.sh "https://github.com/conda-forge/miniforge/re
     && bash /tmp/miniforge.sh -b -p /opt/miniforge \
     && /opt/miniforge/bin/conda init zsh \
     && /opt/miniforge/bin/conda init bash \
-    && /opt/miniforge/bin/mamba init --shell zsh \
+    && /opt/miniforge/bin/mamba shell init zsh\
     && rm /tmp/miniforge.sh
 
 # Disable auto-activation of base environment
