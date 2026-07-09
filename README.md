@@ -61,7 +61,7 @@ glxinfo | grep "OpenGL renderer"
     -p 2320-2340:2320-2340/udp -p 2320-2340:2320-2340/tcp \
     ```
 
-* If needed install *cuda-toolkit* with specific version inside container and put:
+* If needed [install *cuda-toolkit*](https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=24.04&target_type=deb_network) with specific version inside container and put:
     ```bash
     echo '# CUDA-TOOLKIT variables' >> ~/.myrc
     echo 'export CUDA_HOME=/usr/local/cuda' >> ~/.myrc
